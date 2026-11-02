@@ -53,15 +53,15 @@ class TVController:
 
     def exists(self, num):
         if num <= len(self.channels):
-            return "YES"
+            return "Yes"
         else:
-            return "NO"
+            return "No"
 
     def exists(self, channel: str):
         if channel in self.channels:
-            return "YES"
+            return "Yes"
         else:
-            return "NO"
+            return "No"
         
 controller = TVController(["BBC", "Discovery", "TV1000"])
 
