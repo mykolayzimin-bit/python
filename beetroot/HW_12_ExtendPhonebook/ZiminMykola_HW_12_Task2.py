@@ -2,16 +2,16 @@ import sys
 import os
 import json
 
-def read_file():
-    with open(sys.argv[1], "r", encoding='utf-8') as file:
+def read_file(file_path):
+    with open(file_path, "r", encoding='utf-8') as file: # sys.argv[1]
         phone_book_file = json.load(file)
-        return(phone_book_file)
+        return phone_book_file
     
-def update_file(list):
-    with open(sys.argv[1], "w", encoding='utf-8') as file:
-        json.dump(list, file)
+def update_file(file_path, users_list):
+    with open(file_path, "w", encoding='utf-8') as file:
+        json.dump(users_list, file)
 
-def add_new_entries(users_list):
+def add_new_entries(file_path, users_list):
     first_name = input("Enter First name: ")
     last_name = input("Enter Last name: ")
     telephone_number = input("Enter the phone number: ")
@@ -26,23 +26,23 @@ def add_new_entries(users_list):
     "state": state
     })
     
-    update_file(users_list)
+    update_file(file_path, users_list)
 
 def search_by_first_name(first_name, users_list):
     users = [user for user in users_list if user.get("first_name") == first_name]
-    print(users)
+    return users
 
 def search_by_last_name(last_name, users_list):
     users = [user for user in users_list if user.get("last_name") == last_name]
-    print(users)
+    return users
 
 def search_by_full_name(full_name, users_list):
     try:
         first_name, last_name = full_name.split()
         users = [user for user in users_list if user.get("first_name") == first_name and user.get("last_name") == last_name]
-        print(users)
+        return users
     except ValueError:
-        print("Please enter both First name and Last name separated by a space.")
+        return "Please enter both First name and Last name separated by a space."
 
 def search_by_telephone_number(phone_number, users_list):
     users = [user for user in users_list if user.get("telephone_number") == phone_number]
@@ -50,21 +50,23 @@ def search_by_telephone_number(phone_number, users_list):
 
 def search_by_city_or_state(city_or_state, users_list):
     users = [user for user in users_list if user.get("city") == city_or_state or user.get("state") == city_or_state]
-    print(users)
+    return users
 
 def delete_by_telephone_number(phone_number, users_list): # умова: один номер - один користувач
     try:
         index = next((i for i, item in enumerate(users_list) if item.get("telephone_number") == phone_number), None)
         del users_list[index]
+        return True
     except TypeError:
-        print("You entered the number that not exist")
+        return False
+        #print("You entered the number that not exist")
 
 def update_by_telephone_number(phone_number, users_list):
     indexes = [index for index, user in enumerate(users_list) if user.get("telephone_number") == phone_number]
     
     if not indexes:
-        print("You entered the number that not exist")
-        return
+        #print("You entered the number that not exist")
+        return False
 
     first_name = input(f"Enter new first name (current: {users_list[indexes[0]]['first_name']}) or press Enter to skip: ")
     if first_name:
@@ -82,50 +84,54 @@ def update_by_telephone_number(phone_number, users_list):
     if state:
         users_list[indexes[0]]["state"] = state
     
-    print(users_list[indexes[0]])
-
-if len(sys.argv) < 2:
-    raise ValueError("Give the name of phone book!")
-elif not os.path.isfile(sys.argv[1]):
-    raise FileNotFoundError("The file is not exist")
-else:
-    users_list = read_file()
-    print("""Choose the operation:
-                    Add new entries - "1"
-                    Search by first name - "2"
-                    Search by last name - "3"
-                    Search by full name - "4"
-                    Search by telephone number - "5"
-                    Search by city or state - "6"
-                    Delete a record for a given telephone number - "7"
-                    Update a record for a given telephone number - "8"
-                    exit the program - "stop"
-                """)
-    while True:
-        user_input = input("Choose the operation: ")
-        if user_input == "1": #Add new entries
-            add_new_entries(users_list)
-        elif user_input == "2": #Search by first name
-            first_name = input("Enter the First name: ")
-            search_by_first_name(first_name, users_list)
-        elif user_input == "3": # Search by last name
-            last_name = input("Enter the Last name: ")
-            search_by_last_name(last_name, users_list)
-        elif user_input == "4": # Search by full name
-            full_name = input("Enter the Full name: ")
-            search_by_full_name(full_name, users_list)
-        elif user_input == "5": # Search by telephone number
-            phone_number = input("Enter the Telephone number: ")
-            print(search_by_telephone_number(phone_number, users_list))
-        elif user_input == "6": # Search by city or state
-            city_or_state = input("Enter the City or State name:")
-            search_by_city_or_state(city_or_state, users_list)
-        elif user_input == "7": # Delete a record for a given telephone number
-            phone_number = input("Enter the phone number: ")
-            delete_by_telephone_number(phone_number, users_list)
-        elif user_input == "8": # Update a record for a given telephone number
-            phone_number = input("Enter the phone number: ")
-            update_by_telephone_number(phone_number, users_list)
-        elif user_input == "stop": # exit the program
-            update_file(users_list)
-            break
+    return users_list[indexes[0]]
+    
+    
+if __name__ == '__main__':
+    
+    if len(sys.argv) < 2:
+        raise ValueError("Give the name of phone book!")
+    elif not os.path.isfile(sys.argv[1]):
+        raise FileNotFoundError("The file is not exist")
+    else:
+        filename = sys.argv[1]
+        users_list = read_file(filename)
+        print("""Choose the operation:
+                        Add new entries - "1"
+                        Search by first name - "2"
+                        Search by last name - "3"
+                        Search by full name - "4"
+                        Search by telephone number - "5"
+                        Search by city or state - "6"
+                        Delete a record for a given telephone number - "7"
+                        Update a record for a given telephone number - "8"
+                        exit the program - "stop"
+                    """)
+        while True:
+            user_input = input("Choose the operation: ")
+            if user_input == "1": #Add new entries
+                add_new_entries(filename, users_list)
+            elif user_input == "2": #Search by first name
+                first_name = input("Enter the First name: ")
+                print(search_by_first_name(first_name, users_list))
+            elif user_input == "3": # Search by last name
+                last_name = input("Enter the Last name: ")
+                print(search_by_last_name(last_name, users_list))
+            elif user_input == "4": # Search by full name
+                full_name = input("Enter the Full name: ")
+                print(search_by_full_name(full_name, users_list))
+            elif user_input == "5": # Search by telephone number
+                phone_number = input("Enter the Telephone number: ")
+                print(search_by_telephone_number(phone_number, users_list))
+            elif user_input == "6": # Search by city or state
+                city_or_state = input("Enter the City or State name:")
+                print(search_by_city_or_state(city_or_state, users_list))
+            elif user_input == "7": # Delete a record for a given telephone number
+                phone_number = input("Enter the phone number: ")
+                print(delete_by_telephone_number(phone_number, users_list))
+            elif user_input == "8": # Update a record for a given telephone number
+                phone_number = input("Enter the phone number: ")
+                print(update_by_telephone_number(phone_number, users_list))
+            elif user_input == "stop": # exit the program
+                update_file(filename, users_list)
+                break

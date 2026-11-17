@@ -53,30 +53,31 @@ class MyIterable:
             
     def __getitem__(self, index):
         return self.data[index]
-            
-# Test implementation
-my_collection = MyIterable([10, 20, 30, 40, 50])
-print(my_collection[0])
+    
+if __name__ == '__main__':
+    # Test implementation
+    my_collection = MyIterable([10, 20, 30, 40, 50])
+    print(my_collection[0])
 
-# 1. for-in (first loop)
-print("First circle for:")
-for item in my_collection:
-    print(item, end=" ")
-print()
+    # 1. for-in (first loop)
+    print("First circle for:")
+    for item in my_collection:
+        print(item, end=" ")
+    print()
 
-# 2. for-in (second loop)
-print("Second circle for:")
-for item in my_collection:
-    print(item, end=" ")
-print()
+    # 2. for-in (second loop)
+    print("Second circle for:")
+    for item in my_collection:
+        print(item, end=" ")
+    print()
 
-# 3.Call the element by using []
-print("First elem:", my_collection[0])   # Expected: 10
-print("Last elem:", my_collection[-1])   # Expected: 50
-print("Slice:", my_collection[1:4])       # Expected: [20, 30, 40]
+    # 3.Call the element by using []
+    print("First elem:", my_collection[0])   # Expected: 10
+    print("Last elem:", my_collection[-1])   # Expected: 50
+    print("Slice:", my_collection[1:4])       # Expected: [20, 30, 40]
 
-# 4. Out of range
-try:
-    print(my_collection[100])
-except IndexError:
-    print("IndexError has been caught")
+    # 4. Out of range
+    try:
+        print(my_collection[100])
+    except IndexError:
+        print("IndexError has been caught")
